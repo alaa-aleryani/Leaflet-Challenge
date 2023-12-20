@@ -10,7 +10,6 @@ link = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojs
 let earthquakesMap = L.map("map", {
     center: [40.73, -74.0059],
     zoom: 3,
-    // layers: [streetmap, earthquakes]  // This is the default tile and earthquakes points showing
 });
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
@@ -38,7 +37,7 @@ let earthquakesLocations = new  L.LayerGroup();
 
 // Create an overlayMaps object to hold the Earthwuakes location layer.
 let overlayMaps = {
-    "Earthquakes Locations": earthquakesLocations  // earthquakes not defined
+    "Earthquakes Locations": earthquakesLocations  
 };
   
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
@@ -66,7 +65,7 @@ d3.json(link).then(function(data) {
     //        Function FOR MARKER SIZE        //
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     function markerSize(magnitude){
-      if (magnitude == 0 ) {
+      if (magnitude === 0 ) {
         return 1;
       }
       return magnitude * 4;
@@ -77,12 +76,12 @@ d3.json(link).then(function(data) {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // Earthquakes with greater depth should appear darker in color.
     function markerColor(depth) {
-        if (depth < 10) return "#90EE90";   // light green
-        else if (depth < 30) return "#dfff00";  // Chartreuse
-        else if  (depth < 50) return "#FFD580"; // Light Orange
-        else if (depth < 70) return "#FFBF00"; // Amber
-        else if (depth < 90) return "#F88379"; // Coral Pink
-        else return "#FF0000"; // RED // OR "#FF5733"
+        if (depth < 10) return "#98EE00";   
+        else if (depth < 30) return "#D4EE00";  
+        else if  (depth < 50) return "#EECC00"; 
+        else if (depth < 70) return "#EE9C00"; 
+        else if (depth < 90) return "#EA822C"; 
+        else return "#EA2C2C"; 
       }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
@@ -95,7 +94,7 @@ d3.json(link).then(function(data) {
         radius: markerSize(features.properties.mag),
         stroke: true, 
         weight: 0.5,
-        // fillOpacity: 1
+        fillOpacity: 0.4,
         opacity: 1
       };
     }
@@ -111,7 +110,13 @@ d3.json(link).then(function(data) {
 
           // Give each feature a popup that describes the place and time of the earthquake.
           onEachFeature: function(feature, layer) {
-            layer.bindPopup(`<h3>${feature.properties.place}</h3><hr><p>${new Date(feature.properties.time)}</p>`);
+            layer.bindPopup(`
+                      <h3>${feature.properties.place}</h3> <hr> 
+                      <p> 
+                        ${new Date(feature.properties.time)} <br>
+                        Magnitude: ${feature.properties.mag} <br>
+                        Depth: ${feature.geometry.coordinates[2]}
+                      </p>`);
           }   
     }).addTo(earthquakesLocations);
     
@@ -123,10 +128,9 @@ d3.json(link).then(function(data) {
 
         let div = L.DomUtil.create("div", "info legend");
         let depthIntervals = [-10, 10, 30, 50, 70, 90];
-        let colors = ["#90EE90", "#dfff00", "#FFD580", "#FFBF00", "#F88379", "#FF0000"];
+        let colors = ["#98EE00", "#D4EE00", "#EECC00", "#EE9C00", "#EA822C", "#EA2C2C"];
 
-        // Loop through the depth Intervals and generate a label with a colored square for each interval.
-       
+        // Loop through the depth Intervals and generate a label with a colored square for each interval.       
         for (let i = 0; i < depthIntervals.length; i++) {
             div.innerHTML +=
                 '<i style="background:' + colors[i] + '"></i> ' +
@@ -136,6 +140,3 @@ d3.json(link).then(function(data) {
     };
     legend.addTo(earthquakesMap);
   });    
-
-
-
